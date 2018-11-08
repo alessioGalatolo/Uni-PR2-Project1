@@ -1,12 +1,28 @@
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-public class MySecondSecureDataContainer implements SecureDataContainer {
+public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
     //implementato con una lista di user e pass e una lista con i relativi dati
-    //
+
+    private List<String> users;
+    private List<String> passws;
+    private List<List<E>> datas;
+
+    public MySecondSecureDataContainer(){
+        users = new ArrayList<>();
+        passws = new ArrayList<>();
+        datas = new ArrayList<>();
+    }
 
     @Override
     public void createUser(String Id, String passw) throws UserTakenException {
-
+        for(String user : users)
+            if(user.equals(Id))
+                throw new UserTakenException("The user already exists in the Container");
+        users.add(Id);
+        passws.add(passw);
+        datas.add(new ArrayList<>());
     }
 
     @Override

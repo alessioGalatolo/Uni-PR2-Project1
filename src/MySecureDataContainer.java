@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -103,24 +102,69 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     }
 
     @Override
-    public E remove(String Owner, String passw, E data) {
-        return null;
+    public E remove(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException {
+        for(User user: container){
+            if(user.getId().equals(Owner))
+                if(user.samePassw(passw)) {
+                    user.getData().remove(data);
+                    return data;
+                }
+                else
+                    throw new NotAuthorizedException("Owner-Password mismatch: cannot remove data");
+        }
+        throw new IdNotFoundException("Got to end of collection without finding the Owner string as id");
     }
 
     @Override
-    public void copy(String Owner, String passw, E data) {
-
+    public void copy(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException {
+        for(User user: container){
+            if(user.getId().equals(Owner))
+                if(user.samePassw(passw)) {
+                    user.getData().add(data);
+                    return;
+                }
+                else
+                    throw new NotAuthorizedException("Owner-Password mismatch: cannot remove data");
+        }
+        throw new IdNotFoundException("Got to end of collection without finding the Owner string as id");
     }
 
     @Override
-    public void share(String Owner, String passw, String Other, E data) {
-
+    public void share(String Owner, String passw, String Other, E data) throws NotAuthorizedException, IdNotFoundException {
+        User tmp = null;
+        Boolean check = false;
+        for(User user: container){
+            if(user.getId().equals(Other))
+                if(check) {
+                    user.getData().add(data);
+                    return;
+                }
+                else
+                    tmp = user;
+            if(user.getId().equals(Owner))
+                if(user.samePassw(passw)) {
+                    check = true;
+                    if(tmp != null){
+                        tmp.getData().add(data);
+                        return;
+                    }
+                }
+                else
+                    throw new NotAuthorizedException("Owner-Password mismatch: cannot share data");
+        }
+        throw new IdNotFoundException("Got to end of collection without finding the Owner string as id");
     }
 
     @Override
-    public Iterator<E> getIterator(String Owner, String passw) {
-        return null;
+    public Iterator<E> getIterator(String Owner, String passw) throws NotAuthorizedException, IdNotFoundException {
+        for(User user: container){
+            if(user.getId().equals(Owner))
+                if(user.samePassw(passw)) {
+                    return user.getData().iterator();
+                }
+                else
+                    throw new NotAuthorizedException("Owner-Password mismatch: cannot iterate data");
+        }
+        throw new IdNotFoundException("Got to end of collection without finding the Owner string as id");
     }
-
-
 }

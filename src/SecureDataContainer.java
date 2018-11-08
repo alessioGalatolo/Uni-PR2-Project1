@@ -14,17 +14,17 @@ public interface SecureDataContainer<E>{
     E get(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException;
     // Rimuove il dato nella collezione
     // se vengono rispettati i controlli di identità
-    E remove(String Owner, String passw, E data);
+    E remove(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException;
     // Crea una copia del dato nella collezione
     // se vengono rispettati i controlli di identità
-    void copy(String Owner, String passw, E data);
+    void copy(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException;
     // Condivide il dato nella collezione con un altro utente
     // se vengono rispettati i controlli di identità
-    void share(String Owner, String passw, String Other, E data);
+    void share(String Owner, String passw, String Other, E data) throws NotAuthorizedException, IdNotFoundException;
     // restituisce un iteratore (senza remove) che genera tutti i dati
     //dell’utente in ordine arbitrario
     // se vengono rispettati i controlli di identità
-    Iterator<E> getIterator(String Owner, String passw);
+    Iterator<E> getIterator(String Owner, String passw) throws NotAuthorizedException, IdNotFoundException;
     // … altre operazione da definire a scelta
 }
 
