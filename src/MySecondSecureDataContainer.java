@@ -17,9 +17,10 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void createUser(String Id, String passw) throws UserTakenException {
-        for(String user : users)
-            if(user.equals(Id))
-                throw new UserTakenException("The user already exists in the Container");
+        if(Id == null || passw == null)
+            throw new NullPointerException("Cannot create user: Id or passw are null");
+        if(users.contains(Id))
+            throw new UserTakenException("The user already exists in the Container");
         users.add(Id);
         passws.add(passw);
         datas.add(new ArrayList<>());
@@ -27,7 +28,11 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public int getSize(String Owner, String passw) throws IdNotFoundException, UnauthorizedException {
+        if(Owner == null || passw == null)
+            throw new NullPointerException("Cannot get size: Owner or passw are null");
+
         int index = users.indexOf(Owner);
+
         if(index == -1)
             throw new IdNotFoundException("Cannot get size: Owner is not in the collection");
         if(passws.get(index).equals(passw)){
@@ -38,7 +43,11 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public boolean put(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
+        if(Owner == null || passw == null || data == null)
+            throw new NullPointerException("Cannot put data: Owner, passw or data are null");
+
         int index = users.indexOf(Owner);
+
         if(index == -1)
             throw new IdNotFoundException("Cannot put data: Owner is not in the collection");
         else if(passws.get(index).equals(passw)) {
@@ -51,7 +60,11 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
+        if(Owner == null || passw == null || data == null)
+            throw new NullPointerException("Cannot get data: Owner, passw or data are null");
+
         int index = users.indexOf(Owner);
+
         if(index == -1)
             throw new IdNotFoundException("Cannot get data: Owner is not in the collection");
         else if(passws.get(index).equals(passw)) {
@@ -63,7 +76,11 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public E remove(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
+        if(Owner == null || passw == null || data == null)
+            throw new NullPointerException("Cannot remove data: Owner, passw or data are null");
+
         int index = users.indexOf(Owner);
+
         if(index == -1)
             throw new IdNotFoundException("Cannot remove data: Owner is not in the collection");
         else if(passws.get(index).equals(passw)) {
@@ -75,7 +92,11 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void copy(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
+        if(Owner == null || passw == null || data == null)
+            throw new NullPointerException("Cannot copy data: Owner, passw or data are null");
+
         int index = users.indexOf(Owner);
+
         if(index == -1)
             throw new IdNotFoundException("Cannot copy data: Owner is not in the collection");
         else if(passws.get(index).equals(passw)) {
