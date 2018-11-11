@@ -1,6 +1,9 @@
-import java.util.Iterator;
+import java.util.*;
 
 public class MyThirdSecureDataContainer<E> implements SecureDataContainer<E>{
+
+    private Hashtable<Credential, List<E>> table;
+
     private class Credential{
         private String id;
         private String pass;
@@ -24,10 +27,15 @@ public class MyThirdSecureDataContainer<E> implements SecureDataContainer<E>{
         }
     }
 
-
+    public MyThirdSecureDataContainer(){
+        table = new Hashtable<>();
+    }
 
     @Override
     public void createUser(String Id, String passw) throws UserTakenException {
+        if(Id == null || passw == null)
+            throw new NullPointerException();
+        table.put(new Credential(Id, passw), new ArrayList<>());
 
     }
 
