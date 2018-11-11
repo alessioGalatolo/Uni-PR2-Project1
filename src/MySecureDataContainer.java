@@ -11,6 +11,8 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
         private String passw;
         private List<E> data;
 
+        //useless comment to test branches
+
         User(String id, String passw, List<E> data){
             this.id = id;
             this.passw = passw;
