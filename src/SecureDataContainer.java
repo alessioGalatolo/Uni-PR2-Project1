@@ -5,26 +5,26 @@ public interface SecureDataContainer<E>{
     void createUser(String Id, String passw) throws UserTakenException;
     // Restituisce il numero degli elementi di un utente presenti nella
     // collezione
-    int getSize(String Owner, String passw) throws IdNotFoundException, NotAuthorizedException;
+    int getSize(String Owner, String passw) throws IdNotFoundException, UnauthorizedException;
     // Inserisce il valore del dato nella collezione
     // se vengono rispettati i controlli di identità
-    boolean put(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException;
+    boolean put(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
     // Ottiene una copia del valore del dato nella collezione
     // se vengono rispettati i controlli di identità
-    E get(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException;
+    E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
     // Rimuove il dato nella collezione
     // se vengono rispettati i controlli di identità
-    E remove(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException;
+    E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
     // Crea una copia del dato nella collezione
     // se vengono rispettati i controlli di identità
-    void copy(String Owner, String passw, E data) throws NotAuthorizedException, IdNotFoundException;
+    void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
     // Condivide il dato nella collezione con un altro utente
     // se vengono rispettati i controlli di identità
-    void share(String Owner, String passw, String Other, E data) throws NotAuthorizedException, IdNotFoundException;
+    void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException;
     // restituisce un iteratore (senza remove) che genera tutti i dati
     //dell’utente in ordine arbitrario
     // se vengono rispettati i controlli di identità
-    Iterator<E> getIterator(String Owner, String passw) throws NotAuthorizedException, IdNotFoundException;
+    Iterator<E> getIterator(String Owner, String passw) throws UnauthorizedException, IdNotFoundException;
     // … altre operazione da definire a scelta
 }
 
@@ -49,12 +49,12 @@ class IdNotFoundException extends Exception {
     }
 }
 
-class NotAuthorizedException extends Exception{
-    NotAuthorizedException(){
+class UnauthorizedException extends Exception{
+    UnauthorizedException(){
         super();
     }
 
-    NotAuthorizedException(String s){
+    UnauthorizedException(String s){
         super(s);
     }
 }
