@@ -1,61 +1,26 @@
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 public class MySecureDataContainer<E> implements SecureDataContainer<E> {
-    //implementato con un'unica lista di user, password e data
+    //implementato con un'unica hashtable di user, password e data
 
-
-    private class User{
-        private String id;
-        private String passw;
-        private List<E> data;
-
-        User(String id, String passw, List<E> data){
-            this.id = id;
-            this.passw = passw;
-            this.data = data;
-        }
-
-
-        String getId() {
-            return id;
-        }
-
-        boolean samePassw(String passw) {
-            return passw.equals(this.passw);
-        }
-
-        List<E> getData() {
-            return data;
-        }
-
-        void addData(E newData) {
-            data.add(newData);
-        }
-    }
-
-    private ArrayList<User> container;
+    private Hashtable<String, User> container;
 
     public MySecureDataContainer(){
-        container = new ArrayList<>();
+        container = new Hashtable<>(11, 0.5f);
     }
 
     @Override
     public void createUser(String Id, String passw) throws UserTakenException {
         if(Id == null || passw == null)
             throw new NullPointerException("Cannot create user: Id or passw are null");
-        boolean found = false;
-        for(User user : container)
-            if(user.getId().equals(Id)) {
-                found = true;
-                break;
-            }
-        if(found)
+        if(container.containsKey(Id + passw))
             throw new UserTakenException();
-        else{
-            container.add(new User(Id, passw, new ArrayList<>()));
-        }
+        else
+            container.put(Id + passw, new User(Id, passw, new ArrayList<>()));
+
     }
 
     @Override
@@ -181,4 +146,36 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
         }
         throw new IdNotFoundException("Got to end of collection without finding the Owner string as id");
     }
+
+
+    private class User{
+        private String id;
+        private String passw;
+        private List<E> data;
+
+        User(String id, String passw, List<E> data){
+            this.id = id;
+            this.passw = passw;
+            this.data = data;
+        }
+
+
+        String getId() {
+            return id;
+        }
+
+        boolean samePassw(String passw) {
+            return passw.equals(this.passw);
+        }
+
+        List<E> getData() {
+            return data;
+        }
+
+        void addData(E newData) {
+            data.add(newData);
+        }
+    }
+
+
 }
