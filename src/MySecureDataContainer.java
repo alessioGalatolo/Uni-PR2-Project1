@@ -27,19 +27,23 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     public int getSize(String Owner, String passw) throws IdNotFoundException, UnauthorizedException {
         if(Owner == null || passw == null)
             throw new NullPointerException("Cannot return size: Owner or passw are null");
-        boolean found = false;
-        int size = -1;
-        for(User user : container)
-            if(user.getId().equals(Owner))
-                if(user.samePassw(passw)){
-                    found = true;
-                    size = user.getData().size();
-                    break;
-                }else
-                    throw new UnauthorizedException("Owner-Password mismatch");
-        if(!found)
-            throw new IdNotFoundException();
-        return size;
+        if(container.contains(Owner + passw)){
+            return container.get(Owner + passw).getData().size();
+        }else
+            throw new UnauthorizedException();
+//        boolean found = false;
+//        int size = -1;
+//        for(User user : container)
+//            if(user.getId().equals(Owner))
+//                if(user.samePassw(passw)){
+//                    found = true;
+//                    size = user.getData().size();
+//                    break;
+//                }else
+//                    throw new UnauthorizedException("Owner-Password mismatch");
+//        if(!found)
+//            throw new IdNotFoundException();
+//        return size;
     }
 
     @Override
