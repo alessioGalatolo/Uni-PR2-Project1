@@ -3,11 +3,15 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
+    //AF(c): {<owner(i), pass(i), datas(i)> : i = 1..n} =
+    // {<c.users.get(i), c.passws.get(i), c.datas.get(i)> : i = 0..c.users.size()}
+    // data(i) = {elem(j) : j = 1..m} = {c.datas.get(i).get(j) : j = 0..c.datas.size()}
+
     //implementato con una lista di user e pass e una lista con i relativi dati
 
-    private List<String> users;
-    private List<String> passws;
-    private List<List<E>> datas;
+    private ArrayList<String> users;
+    private ArrayList<String> passws;
+    private ArrayList<ArrayList<E>> datas;
 
     public MySecondSecureDataContainer(){
         users = new ArrayList<>();
@@ -28,112 +32,73 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public int getSize(String Owner, String passw) throws IdNotFoundException, UnauthorizedException {
-        if(Owner == null || passw == null)
-            throw new NullPointerException("Cannot get size: Owner or passw are null");
-
-        int index = users.indexOf(Owner);
-
-        if(index == -1)
-            throw new IdNotFoundException("Cannot get size: Owner is not in the collection");
-        if(passws.get(index).equals(passw)){
-            return datas.get(index).size();
-        }else
-            throw new UnauthorizedException();
+        return datas.get(credentialIndex(Owner, passw)).size();
     }
 
     @Override
     public boolean put(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
-        if(Owner == null || passw == null || data == null)
-            throw new NullPointerException("Cannot put data: Owner, passw or data are null");
-
-        int index = users.indexOf(Owner);
-
-        if(index == -1)
-            throw new IdNotFoundException("Cannot put data: Owner is not in the collection");
-        else if(passws.get(index).equals(passw)) {
-            datas.get(index).add(data);
-            return true;
-        }
-        else
-            throw new UnauthorizedException("Cannot put data: user-pass mismatch");
+        datas.get(credentialIndex(Owner, passw)).add(data);
+        return true;
     }
 
     @Override
     public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
-        if(Owner == null || passw == null || data == null)
+        if(data == null)
             throw new NullPointerException("Cannot get data: Owner, passw or data are null");
 
-        int index = users.indexOf(Owner);
+       int index = credentialIndex(Owner, passw);
+       return datas.get(index).get(datas.get(index).indexOf(data));
 
-        if(index == -1)
-            throw new IdNotFoundException("Cannot get data: Owner is not in the collection");
-        else if(passws.get(index).equals(passw)) {
-            return datas.get(index).get(datas.get(index).indexOf(data));
-        }
-        else
-            throw new UnauthorizedException("Cannot get data: user-pass mismatch");
     }
 
     @Override
     public E remove(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
-        if(Owner == null || passw == null || data == null)
+        if (data == null)
             throw new NullPointerException("Cannot remove data: Owner, passw or data are null");
+        datas.get(credentialIndex(Owner, passw)).remove(data);
+        return data;
+    }
 
-        int index = users.indexOf(Owner);
-
-        if(index == -1)
-            throw new IdNotFoundException("Cannot remove data: Owner is not in the collection");
-        else if(passws.get(index).equals(passw)) {
-            datas.get(index).remove(data);
-            return data;
-        }
-        else
-            throw new UnauthorizedException("Cannot remove data: user-pass mismatch");    }
 
     @Override
     public void copy(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
-        if(Owner == null || passw == null || data == null)
+        if(data == null)
             throw new NullPointerException("Cannot copy data: Owner, passw or data are null");
 
-        int index = users.indexOf(Owner);
+        datas.get(credentialIndex(Owner, passw)).add(data);
 
-        if(index == -1)
-            throw new IdNotFoundException("Cannot copy data: Owner is not in the collection");
-        else if(passws.get(index).equals(passw)) {
-            datas.get(index).add(data);
-        }
-        else
-            throw new UnauthorizedException("Cannot copy data: user-pass mismatch");
     }
 
     @Override
     public void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException {
-        if(Owner == null || passw == null || data == null)
+        if(data == null)
             throw new NullPointerException("Cannot share data: Owner, passw or data are null");
 
         int otherIndex = users.indexOf(Other);
-        int ownerIndex = users.indexOf(Owner);
+        credentialIndex(Owner, passw);
 
         if(otherIndex == -1)
             throw new IdNotFoundException("Cannot share data: Other is not in the collection");
-        if(ownerIndex == -1)
-            throw new IdNotFoundException("Cannot share data: Owner is not in the collection");
-        else if(passws.get(ownerIndex).equals(passw)) { //rispetta i controlli di identità, aggiungiamo data a Other
-            datas.get(otherIndex).add(data);
-        }
-        else
-            throw new UnauthorizedException("Cannot share data: user-pass mismatch");
+
+        datas.get(otherIndex).add(data);
     }
 
     @Override
     public Iterator<E> getIterator(String Owner, String passw) throws IdNotFoundException, UnauthorizedException {
-        int index = users.indexOf(Owner);
+        return datas.get(credentialIndex(Owner, passw)).iterator();
+    }
+
+    private int credentialIndex(String owner, String pass) throws IdNotFoundException, UnauthorizedException {
+        if(owner == null || pass == null)
+            throw new NullPointerException("Cannot get size: Owner or passw are null");
+
+        int index = users.indexOf(owner);
+
         if(index == -1)
-            throw new IdNotFoundException("Cannot get Iterator: Owner is not in the collection");
-        else if(passws.get(index).equals(passw)) {
-            return datas.get(index).iterator();
-        }
-        else
-            throw new UnauthorizedException("Cannot get Iterator: user-pass mismatch");
+            throw new IdNotFoundException("Owner is not in the collection");
+        if(passws.get(index).equals(pass)) {
+            return index;
+        }else
+            throw new UnauthorizedException("Owner-password mismatch");
     }
 }
