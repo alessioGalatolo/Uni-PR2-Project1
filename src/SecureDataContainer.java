@@ -41,6 +41,7 @@ public interface SecureDataContainer<E>{
     E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
     //requires: Owner != null, passw != null, data != null, esiste i = 1..n tale che owner(i) == Owner e pass(i) == passw
     //effects: restituisce elem(j) presente in datas(i) per i tale che owner(i) == Owner e pass(i) == passw, per j = 1..m tale che elem(j) == data
+    //         altrimenti resituisce null
     //throws: UnauthorizedException se esiste i = 1..n tale che owner(i) == Owner e pass(i) != passw
     //        IdNotFoundException se for all i = 1..n : owner(i) != Owner
     //        NullPointerException se Owner == null || passw == null || data == null

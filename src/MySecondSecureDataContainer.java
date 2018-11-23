@@ -3,15 +3,14 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
-    //AF(c): {<owner(i), pass(i), datas(i)> : i = 1..n} =
-    // {<c.users.get(i), c.passws.get(i), c.datas.get(i)> : i = 0..c.users.size()}
-    // data(i) = {elem(j) : j = 1..m} = {c.datas.get(i).get(j) : j = 0..c.datas.size()}
+    //AF(c): S = {<c.users.get(i), c.passws.get(i), c.datas.get(i)> : i = 0..c.users.size()}
+    // datas(i) = {c.datas.get(i - 1).get(j) : j = 0..c.datas.size()} forAll i = 1..n
 
     //implementato con una lista di user e pass e una lista con i relativi dati
 
-    private ArrayList<String> users;
-    private ArrayList<String> passws;
-    private ArrayList<ArrayList<E>> datas;
+    private List<String> users;
+    private List<String> passws;
+    private List<List<E>> datas;
 
     public MySecondSecureDataContainer(){
         users = new ArrayList<>();
