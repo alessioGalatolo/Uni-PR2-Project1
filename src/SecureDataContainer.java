@@ -38,7 +38,7 @@ public interface SecureDataContainer<E>{
 
     // Ottiene una copia del valore del dato nella collezione
     // se vengono rispettati i controlli di identità
-    E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
+    E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException;
     //requires: Owner != null, passw != null, data != null, esiste i = 1..n tale che owner(i) == Owner e pass(i) == passw
     //effects: restituisce elem(j) presente in datas(i) per i tale che owner(i) == Owner e pass(i) == passw, per j = 1..m tale che elem(j) == data
     //         altrimenti resituisce null
@@ -48,7 +48,7 @@ public interface SecureDataContainer<E>{
 
     // Rimuove il dato nella collezione
     // se vengono rispettati i controlli di identità
-    E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
+    E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException;
     //requires: Owner != null, passw != null, data != null, esiste i = 1..n tale che owner(i) == Owner e pass(i) == passw
     //modifies: datas(i) per i = 1..n tale che owner(i) == Owner e pass(i) == passw
     //effects: datas(i) = datas(i) - data, per i = 1..n tale che owner(i) == Owner e pass(i) == passw
@@ -59,7 +59,7 @@ public interface SecureDataContainer<E>{
 
     // Crea una copia del dato nella collezione
     // se vengono rispettati i controlli di identità
-    void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException;
+    void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException;
     //requires: Owner != null, passw != null, data != null, esiste i = 1..n tale che owner(i) == Owner e pass(i) == passw
     //modifies: datas(i) per i = 1..n tale che owner(i) == Owner e pass(i) == passw
     //effects: datas(i) = datas(i) U data, per i = 1..n tale che owner(i) == Owner e pass(i) == passw
@@ -70,7 +70,7 @@ public interface SecureDataContainer<E>{
 
     // Condivide il dato nella collezione con un altro utente
     // se vengono rispettati i controlli di identità
-    void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException;
+    void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException;
     //requires: Owner != null, passw != null, data != null, esiste i = 1..n tale che owner(i) == Owner e pass(i) == passw, esiste j = 1..n tale che owner(j) == Other
     //modifies: datas(j) per j = 1..n tale che owner(j) == Other
     //effects: datas(j) = datas(j) U data, per j = 1..n tale che owner(j) == Other
@@ -121,6 +121,16 @@ class UnauthorizedException extends Exception{
     }
 
     UnauthorizedException(String s){
+        super(s);
+    }
+}
+
+class DataNotFoundException extends Exception{
+    DataNotFoundException(){
+        super();
+    }
+
+    DataNotFoundException(String s){
         super(s);
     }
 }

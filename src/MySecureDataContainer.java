@@ -38,37 +38,41 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     }
 
     @Override
-    public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
+    public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         if(data == null)
             throw new NullPointerException();
-        List<E> dataList = getUser(Owner, passw).dataList;
+        List<E> dataList = getUser(Owner, passw, data).dataList;
         return dataList.get(dataList.indexOf(data));
     }
 
     @Override
-    public E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
+    public E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         if(data == null)
             throw new NullPointerException("Cannot remove data: Owner, passw or data are null");
-        getUser(Owner, passw).dataList.remove(data);
+        //attenzione bisogna cancellare il dato da tutta la collezione
+        getUser(Owner, passw, data).dataList.remove(data);
         return data;
     }
 
     @Override
-    public void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
+    public void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         if(data == null)
             throw new NullPointerException("Cannot copy data: Owner, passw or data are null");
-        getUser(Owner, passw).dataList.add(data);
+
+        List<E> ownerDataList = getUser(Owner, passw,data).dataList;
+
+        ownerDataList.add(ownerDataList.get(ownerDataList.indexOf(data)));
     }
 
     @Override
-    public void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException {
+    public void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         if(data == null)
             throw new NullPointerException("Cannot share data: Owner, passw or data are null");
-        getUser(Owner, passw); //non ci servono i dati ma solo il controllo delle credenziali
+        List<E> mainDataList = getUser(Owner, passw, data).dataList; //non ci servono i dati ma solo il controllo delle credenziali
         User otherUser = container.get(Other);
         if(otherUser == null)
             throw new IdNotFoundException("Other user not Found");
-        otherUser.dataList.add(data);
+        otherUser.dataList.add(mainDataList.get(mainDataList.indexOf(data)));
     }
 
     @Override
@@ -87,6 +91,26 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
             return user;
         else
             throw new UnauthorizedException();
+    }
+
+    private User getUser(String owner, String pass, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
+        if(owner == null || pass == null)
+            throw new NullPointerException();
+        User user = container.get(owner);
+        if(user == null)
+            throw new IdNotFoundException();
+        if(user.id.equals(owner) && user.passw.equals(pass)) //controlla le credenziali
+            if(user.dataList.contains(data))    //controlla che ci siano i dati su cui operare
+                return user;
+            else
+                throw new DataNotFoundException();
+        else
+            throw new UnauthorizedException();
+    }
+
+    @Override
+    public String toString() {
+        return container.toString();
     }
 
     private class User{
