@@ -55,6 +55,12 @@ public class Main {
             e.printStackTrace();
         }
 
+        try {
+            mySDC.get("User10", "10password", "data1");
+        } catch (UnauthorizedException | IdNotFoundException | DataNotFoundException e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 }
