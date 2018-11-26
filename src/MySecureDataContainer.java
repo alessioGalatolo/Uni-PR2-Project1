@@ -39,16 +39,12 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        if(data == null)
-            throw new NullPointerException();
         List<E> dataList = getUser(Owner, passw, data).dataList;
         return dataList.get(dataList.indexOf(data));
     }
 
     @Override
     public E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        if(data == null)
-            throw new NullPointerException("Cannot remove data: Owner, passw or data are null");
         //attenzione bisogna cancellare il dato da tutta la collezione
         getUser(Owner, passw, data).dataList.remove(data);
         return data;
@@ -56,8 +52,6 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        if(data == null)
-            throw new NullPointerException("Cannot copy data: Owner, passw or data are null");
 
         List<E> ownerDataList = getUser(Owner, passw,data).dataList;
 
@@ -66,8 +60,6 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        if(data == null)
-            throw new NullPointerException("Cannot share data: Owner, passw or data are null");
         List<E> mainDataList = getUser(Owner, passw, data).dataList; //non ci servono i dati ma solo il controllo delle credenziali
         User otherUser = container.get(Other);
         if(otherUser == null)
@@ -94,7 +86,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     }
 
     private User getUser(String owner, String pass, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        if(owner == null || pass == null)
+        if(owner == null || pass == null || data == null)
             throw new NullPointerException();
         User user = container.get(owner);
         if(user == null)

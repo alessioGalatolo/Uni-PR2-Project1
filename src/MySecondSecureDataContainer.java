@@ -6,6 +6,10 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
     //AF(c): S = {<c.users.get(i), c.passws.get(i), c.datas.get(i)> : i = 0..c.users.size()}
     // datas(i) = {c.datas.get(i - 1).get(j) : j = 0..c.datas.size()} forAll i = 1..n
 
+    //IR(c): users.size() == passws.size() == datas.size(), users != null, passws != null, datas != null,
+    //       for all i = 0..dats.size() : datas.get(i) != null, for all i, j  = 0..(users.size() - 1) with i != j: users.get(i) != users.get(j)
+    //
+
     //implementato con una lista di user e pass e una lista con i relativi dati
 
     private List<String> users;
@@ -89,7 +93,7 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     private int credentialIndex(String owner, String pass) throws IdNotFoundException, UnauthorizedException {
         if(owner == null || pass == null)
-            throw new NullPointerException("Cannot get size: Owner or passw are null");
+            throw new NullPointerException("Owner or passw are null");
 
         int index = users.indexOf(owner);
 
@@ -97,6 +101,23 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
             throw new IdNotFoundException("Owner is not in the collection");
         if(passws.get(index).equals(pass)) {
             return index;
+        }else
+            throw new UnauthorizedException("Owner-password mismatch");
+    }
+
+    private int credentialIndex(String owner, String pass, E data) throws IdNotFoundException, UnauthorizedException, DataNotFoundException {
+        if(owner == null || pass == null || data == null)
+            throw new NullPointerException("Owner, passw or data are null");
+
+        int index = users.indexOf(owner);
+
+        if(index == -1)
+            throw new IdNotFoundException("Owner is not in the collection");
+        if(passws.get(index).equals(pass)) {
+            if(datas.get(index).contains(data))
+                return index;
+            else
+                throw new DataNotFoundException();
         }else
             throw new UnauthorizedException("Owner-password mismatch");
     }
