@@ -60,7 +60,11 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
+        if(Other == null)
+            throw new NullPointerException();
+
         List<E> mainDataList = getUser(Owner, passw, data).dataList; //non ci servono i dati ma solo il controllo delle credenziali
+
         User otherUser = container.get(Other);
         if(otherUser == null)
             throw new IdNotFoundException("Other user not Found");

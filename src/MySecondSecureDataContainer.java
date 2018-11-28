@@ -40,45 +40,42 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public boolean put(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
+        if(data == null)
+            throw new NullPointerException();
+
         datas.get(credentialIndex(Owner, passw)).add(data);
         return true;
     }
 
     @Override
-    public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
-        if(data == null)
-            throw new NullPointerException("Cannot get data: Owner, passw or data are null");
+    public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
 
-       int index = credentialIndex(Owner, passw);
+       int index = credentialIndex(Owner, passw, data);
        return datas.get(index).get(datas.get(index).indexOf(data));
 
     }
 
     @Override
-    public E remove(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
-        if (data == null)
-            throw new NullPointerException("Cannot remove data: Owner, passw or data are null");
-        datas.get(credentialIndex(Owner, passw)).remove(data);
+    public E remove(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException, DataNotFoundException {
+        datas.get(credentialIndex(Owner, passw, data)).remove(data);
         return data;
     }
 
 
     @Override
-    public void copy(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException {
-        if(data == null)
-            throw new NullPointerException("Cannot copy data: Owner, passw or data are null");
+    public void copy(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException, DataNotFoundException {
 
-        datas.get(credentialIndex(Owner, passw)).add(data);
+        datas.get(credentialIndex(Owner, passw, data)).add(data);
 
     }
 
     @Override
-    public void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException {
-        if(data == null)
-            throw new NullPointerException("Cannot share data: Owner, passw or data are null");
+    public void share(String Owner, String passw, String Other, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
+        if(Other == null)
+            throw new NullPointerException();
 
         int otherIndex = users.indexOf(Other);
-        credentialIndex(Owner, passw);
+        credentialIndex(Owner, passw, data);
 
         if(otherIndex == -1)
             throw new IdNotFoundException("Cannot share data: Other is not in the collection");
