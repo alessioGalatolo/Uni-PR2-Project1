@@ -11,7 +11,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
 
     public MySecureDataContainer(){
-        container = new Hashtable<>(11, 0.5f);
+        container = new Hashtable<>(16, 0.5f);
     }
 
     @Override
