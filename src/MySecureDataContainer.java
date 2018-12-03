@@ -3,27 +3,30 @@ import javafx.util.Pair;
 import java.util.*;
 
 public class MySecureDataContainer<E> implements SecureDataContainer<E> {
-    //AF(c): S = {<c.container.values().get(i).id, c.container.values().get(i).passw, c.container.values().get(i).dataList> : i = 0..c.container.size()}
-    //      datas(i) = {c.container.values().get(i - 1).dataList.get(j) : j = 0..c.container.values().get(i - 1).dataList.size()} forAll i = 1..n
+    //AF(c): S = {<c.hashTable.values().get(i).id, c.hashTable.values().get(i).passw,
+    //       c.hashTable.values().get(i).dataList> : i = 0..c.hashTable.size()}
+    //      datas(i) = {c.hashTable.values().get(i - 1).dataList.get(j) :
+    //      j = 0..c.hashTable.values().get(i - 1).dataList.size()} forAll i = 1..n
+    //IR(c): c.hashTable != null, for all i = 0..c.hashTable.size()
 
+    //implementato con un'unica hashTable di user, password e data
 
-    //implementato con un'unica hashtable di user, password e data
-
-    private Hashtable<String, Pair<String, List<E>>> container;
+    private Hashtable<String, Pair<String, List<E>>> hashTable;
 
 
     public MySecureDataContainer(){
-        container = new Hashtable<>(16, 0.5f);
+        hashTable = new Hashtable<>(16, 0.5f);
     }
 
     @Override
     public void createUser(String Id, String passw) throws UserTakenException {
+        hashTable.
         if(Id == null || passw == null)
             throw new NullPointerException("Cannot create user: Id or passw are null");
-        if(container.containsKey(Id))
+        if(hashTable.containsKey(Id))
             throw new UserTakenException();
         else
-            container.put(Id, new Pair<>(passw, new ArrayList<>()));
+            hashTable.put(Id, new Pair<>(passw, new ArrayList<>()));
     }
 
     @Override
@@ -67,7 +70,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
         List<E> mainDataList = getUser(Owner, passw, data).getValue(); //non ci servono i dati ma solo il controllo delle credenziali
 
-        Pair<String, List<E>> otherUser = container.get(Other);
+        Pair<String, List<E>> otherUser = hashTable.get(Other);
         if(otherUser == null)
             throw new IdNotFoundException("Other user not Found");
         otherUser.getValue().add(mainDataList.get(mainDataList.indexOf(data)));
@@ -82,7 +85,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     private Pair<String, List<E>> getUser(String owner, String pass) throws UnauthorizedException, IdNotFoundException {
         if(owner == null || pass == null)
             throw new NullPointerException();
-        Pair<String, List<E>> user = container.get(owner);
+        Pair<String, List<E>> user = hashTable.get(owner);
         if(user == null)
             throw new IdNotFoundException();
         if(user.getKey().equals(pass))
@@ -94,7 +97,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     private Pair<String, List<E>> getUser(String owner, String pass, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         if(owner == null || pass == null || data == null)
             throw new NullPointerException();
-        Pair<String, List<E>> user = container.get(owner);
+        Pair<String, List<E>> user = hashTable.get(owner);
         if(user == null)
             throw new IdNotFoundException();
         if(user.getKey().equals(pass)) //controlla le credenziali
@@ -108,7 +111,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public String toString() {
-        return container.toString();
+        return hashTable.toString();
     }
 
 

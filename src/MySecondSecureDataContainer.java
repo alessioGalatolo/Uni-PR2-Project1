@@ -6,8 +6,9 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
     //AF(c): S = {<c.users.get(i), c.passws.get(i), c.datas.get(i)> : i = 0..c.users.size()}
     // datas(i) = {c.datas.get(i - 1).get(j) : j = 0..c.datas.size()} forAll i = 1..n
 
-    //IR(c): users.size() == passws.size() == datas.size(), users != null, passws != null, datas != null,
-    //       for all i = 0..dats.size() : datas.get(i) != null, for all i, j  = 0..(users.size() - 1) with i != j: users.get(i) != users.get(j)
+    //IR(c): c.users.size() == c.passws.size() == c.datas.size(), c.users != null, c.passws != null,
+    //       c.datas != null, for all i = 0..c.datas.size() : c.datas.get(i) != null,
+    //       for all i, j  = 0..(c.users.size() - 1) with i != j: c.users.get(i) != c.users.get(j)
     //
 
     //implementato con una lista di user e pass e una lista con i relativi dati
