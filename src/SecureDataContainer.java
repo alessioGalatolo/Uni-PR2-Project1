@@ -95,42 +95,75 @@ public interface SecureDataContainer<E>{
 }
 
 class UserTakenException extends Exception {
-    UserTakenException(){
+    public UserTakenException(){
         super();
     }
 
-    UserTakenException(String s){
+    public UserTakenException(String s){
         super(s);
     }
 }
 
 
 class IdNotFoundException extends Exception {
-    IdNotFoundException(){
+    public IdNotFoundException(){
         super();
     }
 
-    IdNotFoundException(String s){
+    public IdNotFoundException(String s){
         super(s);
     }
 }
 
 class UnauthorizedException extends Exception{
-    UnauthorizedException(){
+    public UnauthorizedException(){
         super();
     }
 
-    UnauthorizedException(String s){
+    public UnauthorizedException(String s){
         super(s);
     }
 }
 
 class DataNotFoundException extends Exception{
-    DataNotFoundException(){
+    public DataNotFoundException(){
         super();
     }
 
-    DataNotFoundException(String s){
+    public DataNotFoundException(String s){
         super(s);
+    }
+}
+
+class ActionNotAllowedException extends Exception{
+    public ActionNotAllowedException(){
+        super();
+    }
+
+    public ActionNotAllowedException(String s){
+        super(s);
+    }
+}
+
+class MyIterator<E> implements Iterator<E>{
+    private Iterator<E> iterator;
+
+    public MyIterator(Iterator<E> iterator){
+        this.iterator = iterator;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return iterator.hasNext();
+    }
+
+    @Override
+    public E next() {
+        return iterator.next();
+    }
+
+    @Override
+    public void remove(){
+
     }
 }
