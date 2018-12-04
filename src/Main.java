@@ -2,65 +2,70 @@ import java.util.Iterator;
 
 public class Main {
 
-    private static final int N = 100;
-    private static final int MOD = N / 100 * 98;
-
     public static void main(String[] args) {
         SecureDataContainer<String> mySecureDataContainer= new MySecureDataContainer<>();
         SecureDataContainer<String> mySecondSecureDataContainer = new MySecondSecureDataContainer<>();
 
         if(!test(mySecureDataContainer))
             throw new Error();
-//        if(!test(mySecondSecureDataContainer))
-//            throw new Error();
+        if(!test(mySecondSecureDataContainer))
+            throw new Error();
     }
 
     private static boolean test(SecureDataContainer<String> mySDC) {
-        for(int i = 0; i < N; i++) {
+        int unexpectedBehavior = 9; //Sono il numero di eccezioni che ci aspettiamo, se incontriamo un' eccezione diminuiamo il valore di 1
+
+        for(int i = 0; i < 100; i++) {
             try {
-                mySDC.createUser("User" + i % MOD, i % MOD + "password");
-            } catch (UserTakenException e) {
-                e.printStackTrace();
+                mySDC.createUser("User" + i % 98, i % 98 + "password");//2 eccezioni perchè uso operatore modulo 98
+            } catch (Exception e) {
+                unexpectedBehavior--;
             }
         }
 
         try {
-            System.out.printf("Data size of user 11: %d\n", mySDC.getSize("User11", "11password"));
-            System.out.printf("Data size of user 11: %d\n", mySDC.getSize("User11", "1password"));
-            System.out.printf("Data size of user 11: %d\n", mySDC.getSize("User", "35password"));
-        } catch (IdNotFoundException | UnauthorizedException e) {
-            e.printStackTrace();
+            mySDC.getSize("User11", "11password"); //ok
+            mySDC.getSize("User11", "1password");  //password mismatch
+        } catch (Exception e) {
+            unexpectedBehavior--;
         }
 
         try {
-            mySDC.copy("User11", "11password", "");
+            mySDC.copy("User11", "11password", ""); //data not found
         } catch (Exception e) {
-            e.printStackTrace();
+            unexpectedBehavior--;
         }
 
-        for(int i = 0; i < N; i++) {
+        for(int i = 0; i < 100; i++) {
             for(int j = 0; j <  2; j++) {
                 try {
                     mySDC.put("User" + i, i + "password", "data" + i % (j + 1)); //Usiamo l'operazione di modulo in modo da avere dei duplicati
-                } catch (UnauthorizedException | IdNotFoundException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    unexpectedBehavior--;   //Ho 4 eccezioni dovute a utente 98,99 non esistenti
                 }
             }
         }
 
         try {
+            mySDC.share("User59", "59password", "User10", "data1");//ok
             mySDC.share("User59", "59password", "Userx", "data1"); //user non esitente
-            mySDC.share("User59", "59password", "User10", "data1");//doverebbe condividere i dati
         } catch (Exception e) {
-            e.printStackTrace();
+            unexpectedBehavior--;
         }
 
         try {
-            mySDC.get("User10", "10password", "data1");
-        } catch (UnauthorizedException | IdNotFoundException | DataNotFoundException e) {
-            e.printStackTrace();
+            mySDC.get("User10", "10password", "data1");//ok
+        } catch (Exception e) {
+            unexpectedBehavior--;
         }
 
-        return true;
+        try {
+            mySDC.getIterator("User12", "12password").remove();
+        } catch (Exception e) {
+            unexpectedBehavior--;
+        }
+
+
+        return unexpectedBehavior == 0;
     }
 }

@@ -86,7 +86,7 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public Iterator<E> getIterator(String Owner, String passw) throws IdNotFoundException, UnauthorizedException {
-        return datas.get(credentialIndex(Owner, passw)).iterator();
+        return new MyIterator<>(datas.get(credentialIndex(Owner, passw)).iterator());
     }
 
     private int credentialIndex(String owner, String pass) throws IdNotFoundException, UnauthorizedException {

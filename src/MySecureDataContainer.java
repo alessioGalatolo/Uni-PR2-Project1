@@ -7,9 +7,9 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     //       c.hashTable.values().get(i).dataList> : i = 0..c.hashTable.size()}
     //      datas(i) = {c.hashTable.values().get(i - 1).dataList.get(j) :
     //      j = 0..c.hashTable.values().get(i - 1).dataList.size()} forAll i = 1..n
-    //IR(c): c.hashTable != null, for all i = 0..c.hashTable.size()
 
-    //implementato con un'unica hashTable di user, password e data
+
+    //IR(c): c.hashTable != null, for all i = 0..c.hashTable.size() MISSING SOMETHING
 
     private Hashtable<String, Pair<String, List<E>>> hashTable;
 
@@ -20,7 +20,6 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void createUser(String Id, String passw) throws UserTakenException {
-        hashTable.
         if(Id == null || passw == null)
             throw new NullPointerException("Cannot create user: Id or passw are null");
         if(hashTable.containsKey(Id))
@@ -76,9 +75,10 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
         otherUser.getValue().add(mainDataList.get(mainDataList.indexOf(data)));
     }
 
+
     @Override
     public Iterator<E> getIterator(String Owner, String passw) throws UnauthorizedException, IdNotFoundException {
-        return getUser(Owner, passw).getValue().iterator();
+        return new MyIterator<>(getUser(Owner, passw).getValue().iterator());
     }
 
 
@@ -109,10 +109,6 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
             throw new UnauthorizedException();
     }
 
-    @Override
-    public String toString() {
-        return hashTable.toString();
-    }
 
 
 }
