@@ -14,7 +14,7 @@ public class Main {
     }
 
     private static boolean notCompliant(SecureDataContainer<String> mySDC) {
-        int unexpectedBehavior = 13; //Sono il numero di eccezioni che ci aspettiamo, se incontriamo un' eccezione diminuiamo il valore di 1
+        int unexpectedBehavior = 12; //Sono il numero di eccezioni che ci aspettiamo, se incontriamo un' eccezione diminuiamo il valore di 1
 
 
         //aggiungi 98 utenti
@@ -75,7 +75,7 @@ public class Main {
 
         //vediamo se il dato rimosso in precedenza è stato eliminato anche dal condivisore
         try {
-            mySDC.get("User59", "59password", "data1"); //data not found
+            mySDC.get("User59", "59password", "data1"); //ok
         } catch (Exception e) {
             unexpectedBehavior--;
         }
