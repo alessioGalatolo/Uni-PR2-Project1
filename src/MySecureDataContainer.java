@@ -4,13 +4,16 @@ import javafx.util.Pair;
 import java.util.*;
 
 public class MySecureDataContainer<E> implements SecureDataContainer<E> {
-    //AF(c): S = {<c.hashTable.values().get(i).id, c.hashTable.values().get(i).passw,
-    //       c.hashTable.values().get(i).dataList> : i = 0..c.hashTable.size()}
-    //      datas(i) = {c.hashTable.values().get(i - 1).dataList.get(j) :
-    //      j = 0..c.hashTable.values().get(i - 1).dataList.size()} forAll i = 1..n
+    //per semplicità e chiarezza di scrittura chiamiamo A = c.hashTable.values().toArray()
+    //B = c.hashtable.keySet().toArray()
+
+    //AF(c): S = {<A[i].id, A[i].passw, A[i].dataList> : i = 0..A.length}
+    //      datas(i) = {A[i - 1].dataList.get(j) :
+    //      j = 0..A[i - 1].dataList.size()} forAll i = 1..n
 
 
-    //IR(c): c.hashTable != null, for all i = 0..c.hashTable.size() MISSING SOMETHING
+    //IR(c): c.hashTable != null, for all i,j = 0..B.length con i != j: B[i] != B[j]
+    //       A.length == B.length
 
     private Hashtable<String, Pair<String, List<E>>> hashTable;
 
@@ -22,11 +25,9 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     @Override
     public void createUser(String Id, String passw) throws UserTakenException {
         if(Id == null || passw == null)
-            throw new NullPointerException("Cannot create user: Id or passw are null");
-        if(hashTable.containsKey(Id))
+            throw new NullPointerException();
+        if(hashTable.putIfAbsent(Id, new Pair<>(passw, new ArrayList<>())) != null) //se assente aggiunge e restituisce null
             throw new UserTakenException();
-        else
-            hashTable.put(Id, new Pair<>(passw, new ArrayList<>()));
     }
 
     @Override
@@ -50,7 +51,6 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        //attenzione bisogna cancellare il dato da tutta la collezione
         getUser(Owner, passw, data).getValue().remove(data);
         return data;
     }

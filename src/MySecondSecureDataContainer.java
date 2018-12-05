@@ -11,7 +11,6 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
     //       for all i, j  = 0..(c.users.size() - 1) with i != j: c.users.get(i) != c.users.get(j)
     //
 
-    //implementato con una lista di user e pass e una lista con i relativi dati
 
     private List<String> users;
     private List<String> passws;
