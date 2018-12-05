@@ -1,6 +1,3 @@
-
-import javafx.util.Pair;
-
 import java.util.*;
 
 public class MySecureDataContainer<E> implements SecureDataContainer<E> {
@@ -15,7 +12,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     //IR(c): c.hashTable != null, for all i,j = 0..B.length con i != j: B[i] != B[j]
     //       A.length == B.length
 
-    private Hashtable<String, Pair<String, List<E>>> hashTable;
+    private Hashtable<String, SensitiveData> hashTable;
 
 
     public MySecureDataContainer(){
@@ -26,39 +23,39 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     public void createUser(String Id, String passw) throws UserTakenException {
         if(Id == null || passw == null)
             throw new NullPointerException();
-        if(hashTable.putIfAbsent(Id, new Pair<>(passw, new ArrayList<>())) != null) //se assente aggiunge e restituisce null
+        if(hashTable.putIfAbsent(Id, new SensitiveData(passw, new ArrayList<>())) != null) //se assente aggiunge e restituisce null
             throw new UserTakenException();
     }
 
     @Override
     public int getSize(String Owner, String passw) throws IdNotFoundException, UnauthorizedException {
-        return getUser(Owner, passw).getValue().size();
+        return getUser(Owner, passw).datas.size();
     }
 
     @Override
     public boolean put(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
         if(data == null)
             throw new NullPointerException();
-        getUser(Owner, passw).getValue().add(data);
+        getUser(Owner, passw).datas.add(data);
         return true;
     }
 
     @Override
     public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        List<E> dataList = getUser(Owner, passw, data).getValue();
+        List<E> dataList = getUser(Owner, passw, data).datas;
         return dataList.get(dataList.indexOf(data));
     }
 
     @Override
     public E remove(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-        getUser(Owner, passw, data).getValue().remove(data);
+        getUser(Owner, passw, data).datas.remove(data);
         return data;
     }
 
     @Override
     public void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
 
-        List<E> ownerDataList = getUser(Owner, passw,data).getValue();
+        List<E> ownerDataList = getUser(Owner, passw,data).datas;
 
         ownerDataList.add(ownerDataList.get(ownerDataList.indexOf(data)));
     }
@@ -68,47 +65,58 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
         if(Other == null)
             throw new NullPointerException();
 
-        List<E> mainDataList = getUser(Owner, passw, data).getValue(); //non ci servono i dati ma solo il controllo delle credenziali
+        List<E> mainDataList = getUser(Owner, passw, data).datas; //non ci servono i dati ma solo il controllo delle credenziali
 
-        Pair<String, List<E>> otherUser = hashTable.get(Other);
+        SensitiveData otherUser = hashTable.get(Other);
         if(otherUser == null)
             throw new IdNotFoundException("Other user not Found");
-        otherUser.getValue().add(mainDataList.get(mainDataList.indexOf(data)));
+        otherUser.datas.add(mainDataList.get(mainDataList.indexOf(data)));
     }
 
 
     @Override
     public Iterator<E> getIterator(String Owner, String passw) throws UnauthorizedException, IdNotFoundException {
-        return new MyIterator<>(getUser(Owner, passw).getValue().iterator());
+        return new MyIterator<>(getUser(Owner, passw).datas.iterator());
     }
 
 
-    private Pair<String, List<E>> getUser(String owner, String pass) throws UnauthorizedException, IdNotFoundException {
+    private SensitiveData getUser(String owner, String pass) throws UnauthorizedException, IdNotFoundException {
         if(owner == null || pass == null)
             throw new NullPointerException();
-        Pair<String, List<E>> user = hashTable.get(owner);
+        SensitiveData user = hashTable.get(owner);
         if(user == null)
             throw new IdNotFoundException();
-        if(user.getKey().equals(pass))
+        if(user.password.equals(pass))
             return user;
         else
             throw new UnauthorizedException();
     }
 
-    private Pair<String, List<E>> getUser(String owner, String pass, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
+    private SensitiveData getUser(String owner, String pass, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         if(owner == null || pass == null || data == null)
             throw new NullPointerException();
-        Pair<String, List<E>> user = hashTable.get(owner);
+        SensitiveData user = hashTable.get(owner);
         if(user == null)
             throw new IdNotFoundException();
-        if(user.getKey().equals(pass)) //controlla le credenziali
-            if(user.getValue().contains(data))    //controlla che ci siano i dati su cui operare
+        if(user.password.equals(pass)) //controlla le credenziali
+            if(user.datas.contains(data))    //controlla che ci siano i dati su cui operare
                 return user;
             else
                 throw new DataNotFoundException();
         else
             throw new UnauthorizedException();
     }
+
+    private class SensitiveData {
+        String password;
+        List<E> datas;
+
+        SensitiveData(String password, List<E> datas){
+            this.datas = datas;
+            this.password = password;
+        }
+    }
+
 
 
 
