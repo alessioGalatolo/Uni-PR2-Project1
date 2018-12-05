@@ -119,16 +119,6 @@ class DataNotFoundException extends Exception{
     }
 }
 
-class ActionNotAllowedException extends Exception{
-    public ActionNotAllowedException(){
-        super();
-    }
-
-    public ActionNotAllowedException(String s){
-        super(s);
-    }
-}
-
 class MyIterator<E> implements Iterator<E>{
     private Iterator<E> iterator;
 
