@@ -9,18 +9,18 @@ public interface SecureDataContainer<E>{
 
 
     void createUser(String Id, String passw) throws UserTakenException;
-    //requires: Id != null, passw != passw, for all i = 1..n : owner i != Id
+    //requires: Id != null, passw != passw, for all i = 1..n : owner(i) != Id
     //modifies: this
     //effects: aggiunge la triple <Id, passw, insieme vuoto> a this
-    //throws: UserTakenException (checked) se esiste i = 1..n tale che owner i == Id
+    //throws: UserTakenException (checked) se esiste i = 1..n tale che owner(i) == Id
     //        NullPointerException (unchecked) se Id o passw == null
 
 
     int getSize(String Owner, String passw) throws IdNotFoundException, UnauthorizedException;
-    //requires: Owner != null, passw != null, esiste i = 1..n tale che owner i = Owner e pass i = passw ???????????????????????????????
-    //effects: restituisce cardinalità di data i, per un i tale che owner i == Owner, pass i == passw
+    //requires: Owner != null, passw != null, esiste i = 1..n tale che owner(i) = Owner e pass(i) = passw
+    //effects: restituisce cardinalità di data(i), per un i tale che owner(i) == Owner, pass(i) == passw
     //throws: IdNotFoundException (checked) se non esiste i = 1..n tale che owner i == Owner
-    //        UnauthorizedException (checked) se esiste i = 1..n tale che owner i == Owner e pass i != passw
+    //        UnauthorizedException (checked) se esiste i = 1..n tale che owner(i) == Owner e pass(i) != passw
     //        NullPointerException (unchecked) se Owner == null || passw == null
 
 
@@ -119,7 +119,7 @@ class DataNotFoundException extends Exception{
     }
 }
 
-class MyIterator<E> implements Iterator<E>{
+class MyIterator<E> implements Iterator<E>{ //classe personalizzata che restituisce un iterator che impedisce il metodo remove
     private Iterator<E> iterator;
 
     public MyIterator(Iterator<E> iterator){

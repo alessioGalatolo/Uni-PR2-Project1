@@ -26,8 +26,10 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
     public void createUser(String Id, String passw) throws UserTakenException {
         if(Id == null || passw == null)
             throw new NullPointerException("Cannot create user: Id or passw are null");
+
         if(users.contains(Id))
             throw new UserTakenException("The user already exists in the Container");
+
         users.add(Id);
         passws.add(passw);
         datas.add(new ArrayList<>());
@@ -49,10 +51,9 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-
        int index = credentialIndex(Owner, passw, data);
-       return datas.get(index).get(datas.get(index).indexOf(data));
 
+       return datas.get(index).get(datas.get(index).indexOf(data));
     }
 
     @Override
@@ -64,9 +65,7 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void copy(String Owner, String passw, E data) throws IdNotFoundException, UnauthorizedException, DataNotFoundException {
-
         datas.get(credentialIndex(Owner, passw, data)).add(data);
-
     }
 
     @Override
@@ -79,7 +78,6 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
 
         if(otherIndex == -1)
             throw new IdNotFoundException("Cannot share data: Other is not in the collection");
-
         datas.get(otherIndex).add(data);
     }
 
@@ -88,6 +86,9 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
         return new MyIterator<>(datas.get(credentialIndex(Owner, passw)).iterator());
     }
 
+
+    //Un metodo privato che fa i null checks, il controllo delle credenziali(lanciando eventuali eccezioni) e dell'esistenza del nome utente.
+    //restituisce l'indice del rispettivo utente
     private int credentialIndex(String owner, String pass) throws IdNotFoundException, UnauthorizedException {
         if(owner == null || pass == null)
             throw new NullPointerException("Owner or passw are null");
@@ -102,6 +103,8 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
             throw new UnauthorizedException("Owner-password mismatch");
     }
 
+
+    //stesso metodo rispetto a sopra ma che in più prende data per fare il null check e controllare che sia presente nella collezione dell'utente
     private int credentialIndex(String owner, String pass, E data) throws IdNotFoundException, UnauthorizedException, DataNotFoundException {
         if(owner == null || pass == null || data == null)
             throw new NullPointerException("Owner, passw or data are null");
@@ -114,7 +117,7 @@ public class MySecondSecureDataContainer<E> implements SecureDataContainer<E> {
             if(datas.get(index).contains(data))
                 return index;
             else
-                throw new DataNotFoundException();
+                throw new DataNotFoundException("Data not found in the user list");
         }else
             throw new UnauthorizedException("Owner-password mismatch");
     }

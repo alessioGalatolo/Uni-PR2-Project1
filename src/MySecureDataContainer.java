@@ -36,6 +36,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     public boolean put(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException {
         if(data == null)
             throw new NullPointerException();
+
         getUser(Owner, passw).datas.add(data);
         return true;
     }
@@ -43,6 +44,7 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
     @Override
     public E get(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         List<E> dataList = getUser(Owner, passw, data).datas;
+
         return dataList.get(dataList.indexOf(data));
     }
 
@@ -54,7 +56,6 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
 
     @Override
     public void copy(String Owner, String passw, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
-
         List<E> ownerDataList = getUser(Owner, passw,data).datas;
 
         ownerDataList.add(ownerDataList.get(ownerDataList.indexOf(data)));
@@ -65,11 +66,12 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
         if(Other == null)
             throw new NullPointerException();
 
-        List<E> mainDataList = getUser(Owner, passw, data).datas; //non ci servono i dati ma solo il controllo delle credenziali
-
+        List<E> mainDataList = getUser(Owner, passw, data).datas;
         SensitiveData otherUser = hashTable.get(Other);
+
         if(otherUser == null)
             throw new IdNotFoundException("Other user not Found");
+
         otherUser.datas.add(mainDataList.get(mainDataList.indexOf(data)));
     }
 
@@ -79,7 +81,20 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
         return new MyIterator<>(getUser(Owner, passw).datas.iterator());
     }
 
+    //una classe interna per rappresentare una coppia di valori
+    private class SensitiveData {
+        String password;
+        List<E> datas;
 
+        SensitiveData(String password, List<E> datas){
+            this.datas = datas;
+            this.password = password;
+        }
+    }
+
+
+    //Un metodo privato che fa i null checks, il controllo delle credenziali(lanciando eventuali eccezioni) e dell'esistenza del nome utente.
+    //restituisce il tipo di dato corrispondente alla coppia <password, lista dati>
     private SensitiveData getUser(String owner, String pass) throws UnauthorizedException, IdNotFoundException {
         if(owner == null || pass == null)
             throw new NullPointerException();
@@ -92,6 +107,8 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
             throw new UnauthorizedException();
     }
 
+
+    //stesso metodo rispetto a sopra ma che in più prende data per fare il null check e controllare che sia presente nella collezione dell'utente
     private SensitiveData getUser(String owner, String pass, E data) throws UnauthorizedException, IdNotFoundException, DataNotFoundException {
         if(owner == null || pass == null || data == null)
             throw new NullPointerException();
@@ -106,18 +123,5 @@ public class MySecureDataContainer<E> implements SecureDataContainer<E> {
         else
             throw new UnauthorizedException();
     }
-
-    private class SensitiveData {
-        String password;
-        List<E> datas;
-
-        SensitiveData(String password, List<E> datas){
-            this.datas = datas;
-            this.password = password;
-        }
-    }
-
-
-
 
 }
