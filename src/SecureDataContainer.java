@@ -17,7 +17,7 @@ public interface SecureDataContainer<E>{
 
 
     int getSize(String Owner, String passw) throws IdNotFoundException, UnauthorizedException;
-    //requires: Owner != null, passw != null, esiste i = 1..n tale che owner(i) = Owner e pass(i) = passw
+    //requires: Owner != null, passw != null, esiste i = 1..n tale che owner(i) == Owner e pass(i) == passw
     //effects: restituisce cardinalità di data(i), per un i tale che owner(i) == Owner, pass(i) == passw
     //throws: IdNotFoundException (checked) se non esiste i = 1..n tale che owner i == Owner
     //        UnauthorizedException (checked) se esiste i = 1..n tale che owner(i) == Owner e pass(i) != passw

@@ -3,13 +3,14 @@ import java.util.Iterator;
 public class Main {
 
     public static void main(String[] args) {
-        SecureDataContainer<String> mySecureDataContainer= new MySecureDataContainer<>();//prima implementazione
+        SecureDataContainer<String> mySecureDataContainer = new MySecureDataContainer<>();//prima implementazione
         SecureDataContainer<String> mySecondSecureDataContainer = new MySecondSecureDataContainer<>();//seconda implementazione
 
         if(notCompliant(mySecureDataContainer)) //se non  conforme lancia un errore
             throw new Error("Implementazione non conforme");
         if(notCompliant(mySecondSecureDataContainer))
             throw new Error("Implementazione non conforme");
+        
         System.out.println("Successo!");
     }
 
